@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from 'axios';
+import AdminNavbar from "../../Components/Adminnavbar";
 
 function Employeedetails() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [employees, setEmployees] = useState([]);
 
   const toggleEditModal = () => {
     setIsEditModalOpen(!isEditModalOpen);
@@ -17,10 +20,22 @@ function Employeedetails() {
     setIsAddModalOpen(false);
   };
 
-  return (
- 
+  useEffect(() => {
+    const fetchAllEmployees = async () => {
+      try {
+        const res = await axios.get('http://localhost:8000/employe');
+        setEmployees(res.data);
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchAllEmployees();
+  }, []);
 
+  return (
     <div className="flex justify-center items-center min-h-screen">
+      <AdminNavbar/>
       <div className="max-w-screen-xl mx-auto px-4 md:px-8">
         <div className="items-start justify-between md:flex">
           <div className="mt-3 md:mt-0">
@@ -32,12 +47,12 @@ function Employeedetails() {
             </button>
           </div>
         </div>
-        <div className="mt-12 shadow-sm border rounded-lg overflow-x-auto">
-          {/* Table content */}
+        <div className="mt-12 shadow-sm border rounded-lg ">
           <table className="w-full table-auto text-sm text-left">
             <thead className="bg-gray-50 text-gray-600 font-medium border-b">
               <tr>
                 <th className="py-3 px-6">Employee Id</th>
+                <th className="py-3 px-6">Employee Profile</th>
                 <th className="py-3 px-6">First Name</th>
                 <th className="py-3 px-6">Last Name</th>
                 <th className="py-3 px-6">Employee code</th>
@@ -49,28 +64,29 @@ function Employeedetails() {
               </tr>
             </thead>
             <tbody className="text-gray-600 divide-y">
-              <tr>
-               
-                <td className="px-6 py-4 whitespace-nowrap">101</td>
-                <td className="px-6 py-4 whitespace-nowrap">Anjana</td>
-                <td className="px-6 py-4 whitespace-nowrap">Sasi</td>
-                <td className="px-6 py-4 whitespace-nowrap">Emp001</td>
-                <td className="px-6 py-4 whitespace-nowrap">Anju@gmail.com</td>
-                <td className="px-6 py-4 whitespace-nowrap">987762345</td>
-                <td className="px-6 py-4 whitespace-nowrap">Devel</td>
-         
-                <td className="text-right px-6 whitespace-nowrap">
-                  <button
-                    onClick={toggleEditModal}
-                    className="py-2 px-3 font-medium text-indigo-600 hover:text-indigo-500 duration-150 hover:bg-gray-50 rounded-lg"
-                  >
-                    Edit
-                  </button>
-                  <button className="py-2 leading-none px-3 font-medium text-red-600 hover:text-red-500 duration-150 hover:bg-gray-50 rounded-lg">
-                    Delete
-                  </button>
-                </td>
-              </tr>
+              {employees.map(employee => (
+                <tr key={employee.id}>
+                  <td className="px-6 py-4 whitespace-nowrap">{employee.empid}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{employee.empimage}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{employee.firstname}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{employee.lastname}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{employee.empcode}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{employee.email}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{employee.contactno}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{employee.department}</td>
+                  <td className="text-right px-6 whitespace-nowrap">
+                    <button
+                      onClick={toggleEditModal}
+                      className="py-2 px-3 font-medium text-indigo-600 hover:text-indigo-500 duration-150 hover:bg-gray-50 rounded-lg"
+                    >
+                      Edit
+                    </button>
+                    <button className="py-2 leading-none px-3 font-medium text-red-600 hover:text-red-500 duration-150 hover:bg-gray-50 rounded-lg">
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -106,9 +122,9 @@ function Employeedetails() {
                   <span className="sr-only">Close modal</span>
                 </button>
               </div>
-              <div class="flex justify-center">
-                <form class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 flex flex-col items-center">
-                  <h6 class="text-3xl text-center text-gray-900 font-bold mb-4">
+              <div className="flex justify-center">
+                <form className="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 flex flex-col items-center">
+                <h6 class="text-3xl text-center text-gray-900 font-bold mb-4">
                     Book Your Parking Area
                   </h6>
 
@@ -135,6 +151,7 @@ function Employeedetails() {
                       Submit
                     </button>
                   </div>
+
                 </form>
               </div>
             </div>
@@ -173,28 +190,56 @@ function Employeedetails() {
                 </button>
               </div>
 
-              <div class="flex justify-center">
-                <form class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 flex flex-col items-center">
-                  <h6 class="text-3xl text-center text-gray-900 font-bold mb-4">
+              <div className="flex justify-center">
+                <form className="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 flex flex-col items-center">
+                <h6 class="text-3xl text-center text-gray-900 font-bold mb-4">
                     Book Your Parking Area
                   </h6>
 
                   <div class="flex flex-col gap-4">
-                    <label class="label">
+             
+                  <input
+                        class="input border-black rounded-md text-black"
+                        type="text"
+                        placeholder="Enter your fname"
+                      />
+                        <input
+                        class="input border-black rounded-md text-black"
+                        type="text"
+                        placeholder="Enter your lname"
+                      />
+                             <input
+                        class="input border-black rounded-md text-black"
+                        type="text"
+                        placeholder="Enter your empcode"
+                      />
+                                 <input
+                        class="input border-black rounded-md text-black"
+                        type="text"
+                        placeholder="Enter your email"
+                      />
+                                 <input
+                        class="input border-black rounded-md text-black"
+                        type="text"
+                        placeholder="Enter your contact"
+                      />
+                                    <input
+                        class="input border-black rounded-md text-black"
+                        type="text"
+                        placeholder="Enter your dep"
+                      />
                       <input
                         class="input border-black rounded-md text-black"
                         type="email"
                         placeholder="Enter your email"
                       />
-                    </label>
-
-                    <label class="label">
+              
                       <input
                         class="input border-black rounded-md text-black"
                         type="text"
-                        placeholder="Enter your car number"
+                        placeholder="Enter your image"
                       />
-                    </label>
+                  
                     <button
                       type="submit"
                       class="btn border-black rounded-md px-6 py-3 bg-gray-900 text-white font-bold text-md"
@@ -202,6 +247,7 @@ function Employeedetails() {
                       Submit
                     </button>
                   </div>
+
                 </form>
               </div>
             </div>
@@ -209,8 +255,8 @@ function Employeedetails() {
         </div>
       )}
     </div>
-
   );
 }
 
 export default Employeedetails;
+

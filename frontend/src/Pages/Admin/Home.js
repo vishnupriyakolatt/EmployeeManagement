@@ -1,10 +1,9 @@
 import React from 'react'
+import AdminNavbar from '../../Components/Adminnavbar'
 
 function Home() {
   return (
     <div>
-<h1>WELCOME TO ADMIN  PAGE</h1>
-<button>profile page</button>
 
 
     </div>
