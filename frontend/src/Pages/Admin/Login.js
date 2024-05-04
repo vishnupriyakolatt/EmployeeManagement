@@ -15,7 +15,7 @@ const navigate=useNavigate()
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const result = await axios.post('http://localhost:9080/admin/adminlogin', values);
+      const result = await axios.post('http://localhost:7000/admin/adminlogin', values);
       console.log(result); 
 navigate('/admin/home')
   
