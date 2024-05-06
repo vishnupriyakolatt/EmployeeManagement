@@ -63,14 +63,14 @@ router.post("/addemploye", async (req, res) => {
       html: `<p>Your login password is ${OTP}</p>`,
     };
 
-    // Send OTP email
+
     await Transporter.sendMail(mailDetails, (err, data) => {
       if (err) {
         console.error(err);
         res.status(500).json({ error: "Failed to send OTP email" });
       } else {
         console.log("OTP mailed successfully");
-        // Save employee data with OTP as password
+      
         saveEmployee(req.body, OTP)
           .then(() => {
             res.status(200).json({ msg: "Employee added successfully" });
@@ -98,7 +98,7 @@ async function saveEmployee(data, password) {
     data.contactno,
     data.department,
     data.empimage,
-    password, // Use OTP as the password
+    password, 
   ];
 
   await db.query(sql, values);
@@ -131,25 +131,60 @@ router.delete("/employe/:id", async (req, res) => {
 });
 
 
+
 router.put("/employe/:id", (req, res) => {
-  console.log(req.body);
-  console.log(req.params.id);
+
   const empid = req.params.id;
+  if (!empid) {
+    return res.status(400).json({ error: 'Employee ID is required' });
+  }
+
   const q =
-    "UPDATE employedetails SET `firstname`=?, `lastname`=?,  `contactno`=?, `department`=?, `empimage`=? WHERE empid=?";
+    "UPDATE employedetails SET `firstname`=?, `lastname`=?,  `contactno`=?, `department`=?, `empimage`=?,`password`=? WHERE empid=?";
   const values = [
     req.body.firstname,
     req.body.lastname,
     req.body.contactno,
     req.body.department,
     req.body.empimage,
+    req.body.password,
     req.params.id
   ];
   db.query(q, values, (err, data) => {
     if (err) return res.json(err);
-    return res.json("Employee details have been updated");
+    return res.json(data);
+    console.log("updated data"+data)
   });
 });
 
+router.post('/emplogin', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const sql = "SELECT * FROM employedetails WHERE email = ? AND password = ?";
+    const [rows] = await db.query(sql, [email, password]);
+
+
+    if (rows.length > 0) {
+      const email = rows[0].email;
+      const secretKey = "employesecret";
+      const token = jwt.sign({ role: "employe", email: email }, secretKey, {
+        expiresIn: "1d",
+      });
+
+      res.cookie("token", token, { httpOnly: true, secure: true });
+      return res.json({ loginStatus: true });
+    } else {
+      return res
+        .status(401)
+        .json({ loginStatus: false, error: "Incorrect email or password." });
+    }
+  } catch (err) {
+    console.error("Database query error:", err);
+    return res
+      .status(500)
+      .json({ error: "An error occurred. Please try again later." });
+  }
+});
 
 export { router as adminRoutes };

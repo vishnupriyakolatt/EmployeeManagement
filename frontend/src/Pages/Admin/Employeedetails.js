@@ -9,8 +9,7 @@ function Employeedetails() {
     console.log("fetching")
     try {
       const res = await axios.get('http://localhost:7000/admin/allemploye'); 
-      setEmployees(res.data);
-      console.log(res);
+      setEmployees(res.data)
     } catch (error) {
       console.log(error);
     }
@@ -27,8 +26,7 @@ function Employeedetails() {
         console.log(res)
         fetchAllEmployees()
       })
-      // const updatedEmployees = employees.filter(employee => employee.empid !== id);
-      // setEmployees(updatedEmployees);
+ 
 
     } catch (error) {
       console.error(error);
