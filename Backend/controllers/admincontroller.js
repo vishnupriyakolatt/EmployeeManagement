@@ -168,6 +168,8 @@ export const employedelete = async (req, res) => {
 
   export const update = async (req, res) => {
     try {
+      console.log('updated')
+      console.log(req.body)
       const empid = req.params.id;
       if (!empid) {
         return res.status(400).json({ error: 'Employee ID is required' });
@@ -180,7 +182,7 @@ export const employedelete = async (req, res) => {
         req.body.lastname,
         req.body.contactno,
         req.body.department,
-        req.body.empimage,
+        'https://cdn.vectorstock.com/i/500p/81/63/default-avatar-photo-placeholder-icon-grey-vector-38508163.jpg', 
         req.body.password,
         req.params.id
       ];
@@ -206,10 +208,10 @@ export const employedelete = async (req, res) => {
       const [rows] = await db.query(sql, [email, password]);
   
       if (rows.length > 0) {
-        const userEmail = rows[0].email;
+        const userEmail = rows[0].empid;
         const secretKey = "employesecret";
   
-        const token = jwt.sign({ email: userEmail }, secretKey, {
+        const token = jwt.sign({userId:userEmail}, secretKey, {
           expiresIn: "1d",
         });
   
@@ -231,26 +233,31 @@ export const employedelete = async (req, res) => {
 
 
   export const profile = async (req, res) => {
-    try {
-      if (!req.user || !req.user.id) {
-        return res.status(401).json({ error: 'Invalid token.' });
-      }
+   try {
+    console.log("profile")
+    console.log(req.user.userId)
+    if (!req.user.userId) {
+      return res.status(401).json({ error: 'Invalid token.' });
+    }
+      const empid = req.user.userId;
   
-      const userId = req.user.id;
-      const sql = "SELECT * FROM employedetails WHERE id = ?";
-      const [rows] = await db.query(sql, [userId]);
+ console.log(empid)
+      const sql = `SELECT * FROM employedetails WHERE empid = ?`;
   
   
-      if (rows.length > 0) {
-        const user = rows[0];
-        return res.json(user);
-   
+      const [result] = await db.query(sql, [empid]);
+      console.log(result);
+      if (result.length > 0) {
+        res.status(200).json(result[0]);
+        console.log(result[0]);
       } else {
-        return res.status(404).json({ error: 'User not found.' });
+
+        res.status(404).send('Employee not found');
       }
     } catch (err) {
-      console.error('Error fetching user profile:', err);
-      return res.status(500).json({ error: 'An error occurred. Please try again later.' });
+ 
+      console.error('Error fetching employee:', err);
+      res.status(500).send('Error fetching employee data');
     }
   };
   
@@ -258,21 +265,34 @@ export const employedelete = async (req, res) => {
 
 export const updateprofile=async (req, res) => {
   try {
-    const userId = req.user.id; 
-    const { firstname, lastname, empcode, contactno, department, password, empimage, email } = req.body;
-
-    const sql = "UPDATE employedetails SET firstname = ?, lastname = ?, empcode = ?, contactno = ?, department = ?, password = ?, empimage = ?, email = ? WHERE id = ?";
-    const result = await db.query(sql, [firstname, lastname, empcode, contactno, department, password, empimage, email, userId]);
-
-    if (result.affectedRows > 0) {
-      return res.json({ message: 'Profile updated successfully.' });
-    } else {
-      return res.status(404).json({ error: 'User not found or no changes made.' });
+    console.log('updated profile')
+    console.log(req.body)
+    const empid = req.user.userId;
+    if (!empid) {
+      return res.status(400).json({ error: 'Employee ID is required' });
     }
+
+    const q =
+      "UPDATE employedetails SET `firstname`=?, `lastname`=?, `contactno`=?, `department`=?, `empimage`=?, `password`=? WHERE empid=?";
+    const values = [
+      req.body.firstname,
+      req.body.lastname,
+      req.body.contactno,
+      req.body.department,
+      req.body.empimage,
+      req.body.password,
+      req.user.userId
+    ];
+
+    const [result] = await db.query(q, values);
+
+    console.log('Updated data:', result);
+    return res.status(200).json({ message: 'Employee updated successfully', data: result });
   } catch (err) {
-    console.error('Error updating user profile:', err);
-    return res.status(500).json({ error: 'An error occurred. Please try again later.' });
+    console.error('Error in update:', err);
+    return res.status(500).json({ error: 'Internal server error' });
   }
+
  }
 
 

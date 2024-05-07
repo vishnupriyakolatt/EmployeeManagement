@@ -15,7 +15,7 @@ function Employeview() {
     empimage: '',
     email: ''
   });
-  const [editable, setEditable] = useState(false); // State for input field editability
+  const [editable, setEditable] = useState(false); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
