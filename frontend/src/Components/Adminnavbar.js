@@ -15,7 +15,6 @@ const AdminNavbar = () => {
   };
   const menus = [
     { name: "dashboard", link: "/admin/home", icon: MdOutlineDashboard },
-    { name: "Department", link: "/admin/categoryview", icon: IoBookSharp },
     { name: "Employee", link: "/admin/empdetails", icon: SiBookstack },
     { name: "Logout", link: "/admin/", icon: IoIosLogOut },
   ];

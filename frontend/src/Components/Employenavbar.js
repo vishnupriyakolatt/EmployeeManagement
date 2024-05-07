@@ -32,7 +32,7 @@ const Employenavbar = ({ bg }) => {
 
         <ul className='hidden md:flex items-center gap-10 lg:gap-[68px] font-bold text-xl pb-10'>
           <Link to='/'>Home</Link>
-          <Link to='/category'>Profile</Link>
+          <Link to='/profile'>Profile</Link>
         </ul>
 
  

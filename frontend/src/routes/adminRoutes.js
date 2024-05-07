@@ -15,7 +15,7 @@ function adminRoutes() {
 <Routes>
     <Route path='/' element={<Login/>} />
     <Route path='/home' element={<Home/>} />
-    <Route path='/add' element={<Employeadd />} />
+    <Route path='/add' element={<Employeadd/>} />
     <Route path='/empdetails' element={<Employeedetails/>} />
 
     <Route path='/employview/:id' element={<Employeview/>} />
